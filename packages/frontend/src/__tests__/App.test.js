@@ -12,8 +12,8 @@ const server = setupServer(
     return res(
       ctx.status(200),
       ctx.json([
-        { id: 1, title: 'Test Task 1', description: 'Desc 1', due_date: '2025-09-30', completed: 0 },
-        { id: 2, title: 'Test Task 2', description: 'Desc 2', due_date: '2025-10-01', completed: 1 },
+        { id: 1, title: 'Test Task 1', description: 'Desc 1', due_date: '2025-09-30', completed: 0, priority: 'P3' },
+        { id: 2, title: 'Test Task 2', description: 'Desc 2', due_date: '2025-10-01', completed: 1, priority: 'P3' },
       ])
     );
   }),
@@ -35,6 +35,7 @@ const server = setupServer(
         description: req.body.description || '',
         due_date: req.body.due_date || null,
         completed: 0,
+        priority: req.body.priority || 'P3',
       })
     );
   }),
@@ -51,7 +52,11 @@ const server = setupServer(
   rest.patch('/api/tasks/:id', (req, res, ctx) => {
     return res(
       ctx.status(200),
-      ctx.json({ id: Number(req.params.id), completed: req.body.completed ? 1 : 0 })
+      ctx.json({
+        id: Number(req.params.id),
+        completed: req.body.completed ? 1 : 0,
+        priority: req.body.priority,
+      })
     );
   }),
 
@@ -103,6 +108,7 @@ describe('TODO App', () => {
           description: description || '',
           due_date: req.body.due_date || null,
           completed: 0,
+          priority: req.body.priority || 'P3',
         };
         tasks = [...tasks, newTask];
         return res(ctx.status(201), ctx.json(newTask));
@@ -120,6 +126,39 @@ describe('TODO App', () => {
     await user.click(screen.getByTestId('submit-task'));
     await waitFor(() => {
       expect(screen.getByText(/New Test Task/i)).toBeInTheDocument();
+    });
+  });
+
+  test('new task defaults to P3 priority', async () => {
+    await act(async () => {
+      render(<App />);
+    });
+    await waitFor(() => {
+      expect(screen.getByText('Test Task 1')).toBeInTheDocument();
+    });
+    const priorityButtons = screen.getAllByRole('radio', { name: 'Set priority P3' });
+    expect(priorityButtons[0]).toHaveAttribute('aria-checked', 'true');
+  });
+
+  test('clicking a priority button updates the task priority', async () => {
+    const user = userEvent.setup();
+    let patchedBody = null;
+    server.use(
+      rest.patch('/api/tasks/:id', (req, res, ctx) => {
+        patchedBody = req.body;
+        return res(ctx.status(200), ctx.json({ id: Number(req.params.id), priority: req.body.priority }));
+      })
+    );
+    await act(async () => {
+      render(<App />);
+    });
+    await waitFor(() => {
+      expect(screen.getByText('Test Task 1')).toBeInTheDocument();
+    });
+    const p1Buttons = screen.getAllByRole('radio', { name: 'Set priority P1' });
+    await user.click(p1Buttons[0]);
+    await waitFor(() => {
+      expect(patchedBody).toEqual({ priority: 'P1' });
     });
   });
 

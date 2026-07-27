@@ -6,6 +6,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import EventIcon from '@mui/icons-material/Event';
 
+const PRIORITIES = ['P1', 'P2', 'P3'];
+const PRIORITY_SELECTED_COLOR = '#07F2E6';
+const PRIORITY_UNSELECTED_COLOR = '#7A7A7A';
+
 function TaskList({ onEdit }) {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -52,6 +56,20 @@ function TaskList({ onEdit }) {
       fetchTasks();
     } catch (err) {
       setError('Failed to update task');
+    }
+  };
+
+  const handleSetPriority = async (task, priority) => {
+    if (task.priority === priority) return;
+    try {
+      await fetch(`/api/tasks/${task.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priority })
+      });
+      fetchTasks();
+    } catch (err) {
+      setError('Failed to update task priority');
     }
   };
 
@@ -127,7 +145,7 @@ function TaskList({ onEdit }) {
           <ListItem 
             key={task.id} 
             sx={{ 
-              pr: 18,
+              pr: 24,
               py: 1,
               mb: 1,
               borderRadius: 2,
@@ -220,6 +238,50 @@ function TaskList({ onEdit }) {
                   }}
                 />
               )}
+              <Box
+                role="radiogroup"
+                aria-label={`Priority for ${task.title}`}
+                sx={{
+                  display: 'flex',
+                  gap: 0.5
+                }}
+              >
+                {PRIORITIES.map((priority) => {
+                  const selected = task.priority === priority;
+                  return (
+                    <Box
+                      key={priority}
+                      component="button"
+                      type="button"
+                      role="radio"
+                      aria-checked={selected}
+                      aria-label={`Set priority ${priority}`}
+                      onClick={() => handleSetPriority(task, priority)}
+                      sx={{
+                        minWidth: 28,
+                        height: 22,
+                        px: 0.5,
+                        border: '1px solid',
+                        borderColor: selected ? PRIORITY_SELECTED_COLOR : PRIORITY_UNSELECTED_COLOR,
+                        borderRadius: 1,
+                        background: selected ? PRIORITY_SELECTED_COLOR : 'transparent',
+                        color: selected ? '#083344' : PRIORITY_UNSELECTED_COLOR,
+                        fontSize: '0.7rem',
+                        fontWeight: 700,
+                        lineHeight: 1,
+                        cursor: 'pointer',
+                        fontFamily: 'inherit',
+                        transition: 'all 0.15s ease-in-out',
+                        '&:hover': {
+                          background: selected ? PRIORITY_SELECTED_COLOR : 'rgba(122, 122, 122, 0.15)',
+                        }
+                      }}
+                    >
+                      {priority}
+                    </Box>
+                  );
+                })}
+              </Box>
               <Box 
                 sx={{ 
                   display: 'flex', 
