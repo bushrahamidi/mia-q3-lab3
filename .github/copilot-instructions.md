@@ -13,3 +13,10 @@ The project documentation will be built during the bootcamp sessions.
 - [UI Guidelines](../docs/ui-guidelines.md) - Core UI guidelines for the TODO app
 - [Testing Guidelines](../docs/testing-guidelines.md) - Core testing principles and requirements for the TODO app
 - [Coding Guidelines](../docs/coding-guidelines.md) - Coding style and quality principles for the TODO app
+
+<!-- mermaid-ai-skills:start -->
+## Mermaid Diagrams
+
+When the user asks to create, edit, or visualize a diagram, follow the
+instructions in `.github/instructions/mermaid.instructions.md`.
+<!-- mermaid-ai-skills:end -->

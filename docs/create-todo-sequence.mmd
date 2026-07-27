@@ -1,0 +1,21 @@
+sequenceDiagram
+  actor User
+  participant Form as React TaskForm
+  participant App as React App
+  participant API as Express API
+  participant Store as In-Memory SQLite
+
+  User->>Form: Enter task details and submit
+  Form->>App: onSave(task)
+  App->>API: POST /api/tasks (JSON)
+  API->>API: Validate required title
+  API->>Store: INSERT task
+  Store-->>API: New task ID
+  API->>Store: SELECT created task
+  Store-->>API: Created task
+  API-->>App: 201 Created (task JSON)
+  App->>API: GET /api/tasks
+  API->>Store: SELECT tasks
+  Store-->>API: Task rows
+  API-->>App: 200 OK (task list)
+  App-->>User: Display updated TODO list

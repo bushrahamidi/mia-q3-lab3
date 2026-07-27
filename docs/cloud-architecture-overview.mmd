@@ -1,0 +1,16 @@
+C4Context
+  title TODO App System Context
+
+  Person(user, "TODO App User", "Creates, updates, completes, and deletes tasks.")
+
+  System_Boundary(todo_app, "TODO App Monorepo") {
+    System(frontend, "React Frontend", "Browser UI built with React and Material UI.")
+    System(api, "Express API", "Node.js REST API for task operations.")
+    SystemDb(store, "In-Memory SQLite Store", "Process-local task data; cleared when the API stops.")
+  }
+
+  Rel(user, frontend, "Uses", "Web browser")
+  Rel(frontend, api, "Calls /api/tasks", "HTTP/JSON")
+  Rel(api, store, "Reads and writes tasks", "better-sqlite3")
+
+  UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
