@@ -92,3 +92,25 @@ li:last-child {
   color: #d32f2f;
   font-weight: bold;
 }
+
+/* Priority buttons (P1/P2/P3) shown on each task row.
+   Selected priority uses #07F2E6, unselected priority uses #7A7A7A. */
+.priority-button {
+  border: 1px solid #7A7A7A;
+  color: #7A7A7A;
+  background-color: transparent;
+}
+
+.priority-button:hover {
+  background-color: rgba(122, 122, 122, 0.15);
+}
+
+.priority-button.priority-selected {
+  border-color: #07F2E6;
+  background-color: #07F2E6;
+  color: #083344;
+}
+
+.priority-button.priority-selected:hover {
+  background-color: #07F2E6;
+}
